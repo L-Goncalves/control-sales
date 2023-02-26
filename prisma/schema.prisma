@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Seller {
+  created_at DateTime  @default(now())
+  id        String    @id @default(uuid())
+  nickname  String    @unique()
+  code      String    @unique()
+  discordId String   @unique()
+  banned    Boolean   @default(false)
+  orders    Order[]
+  accounts   Account[]
+}
+
+model Order {
+  id           String @id @unique @default(uuid())
+  seller       Seller @relation(fields: [seller_id], references: [id])
+  seller_id     String
+  amount       BigInt
+  disbursement BigInt
+}
+
+model Account {
+  id        String    @id @default(uuid()) 
+  seller   Seller @relation(fields: [seller_id], references: [id])
+  seller_id String
+  login    String @unique()
+  password String
+  email String
+  security_answer String
+  game     Game
+  isSold Boolean @default(false)
+}
+
+enum Game {
+  Overwatch2
+  GTA5
+  Fortnite
+  LeagueOfLegends
+}
